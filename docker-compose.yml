@@ -101,18 +101,18 @@ services:
       retries: 10
     labels:
       - traefik.enable=true
-      - traefik.http.routers.sonarr.rule=(Host(`${HOSTNAME}`) && PathPrefix(`/sonarr`))
+      - traefik.http.routers.sonarr.rule=(Host(`sonarr.${BASE_HOSTNAME}`))
       - traefik.http.routers.sonarr.tls=true
       - traefik.http.routers.sonarr.tls.certresolver=myresolver
       - traefik.http.services.sonarr.loadbalancer.server.port=8989
       - homepage.group=Media Management
       - homepage.name=Sonarr
       - homepage.icon=sonarr.png
-      - homepage.href=/sonarr
+      - homepage.href=https://sonarr.${BASE_HOSTNAME}
       - homepage.description=Series management
       - homepage.weight=0
       - homepage.widget.type=sonarr
-      - homepage.widget.url=http://sonarr:8989/sonarr
+      - homepage.widget.url=http://sonarr:8989
       - homepage.widget.key=${SONARR_API_KEY}
     profiles:
       - media_download
@@ -131,18 +131,18 @@ services:
       retries: 10
     labels:
       - traefik.enable=true
-      - traefik.http.routers.radarr.rule=(Host(`${HOSTNAME}`) && PathPrefix(`/radarr`))
+      - traefik.http.routers.radarr.rule=(Host(`radarr.${BASE_HOSTNAME}`))
       - traefik.http.routers.radarr.tls=true
       - traefik.http.routers.radarr.tls.certresolver=myresolver
       - traefik.http.services.radarr.loadbalancer.server.port=7878
       - homepage.group=Media Management
       - homepage.name=Radarr
       - homepage.icon=radarr.png
-      - homepage.href=/radarr
+      - homepage.href=https://radarr.${BASE_HOSTNAME}
       - homepage.description=Movies management
       - homepage.weight=1
       - homepage.widget.type=radarr
-      - homepage.widget.url=http://radarr:7878/radarr
+      - homepage.widget.url=http://radarr:7878
       - homepage.widget.key=${RADARR_API_KEY}
     profiles:
       - media_download
@@ -189,18 +189,18 @@ services:
       retries: 10
     labels:
       - traefik.enable=true
-      - traefik.http.routers.bazarr.rule=(Host(`${HOSTNAME}`) && PathPrefix(`/bazarr`))
+      - traefik.http.routers.bazarr.rule=(Host(`bazarr.${BASE_HOSTNAME}`))
       - traefik.http.routers.bazarr.tls=true
       - traefik.http.routers.bazarr.tls.certresolver=myresolver
       - traefik.http.services.bazarr.loadbalancer.server.port=6767
       - homepage.group=Media Management
       - homepage.name=Bazarr
       - homepage.icon=bazarr.png
-      - homepage.href=/bazarr
+      - homepage.href=https://bazarr.${BASE_HOSTNAME}
       - homepage.description=Subtitles management
       - homepage.weight=4
       - homepage.widget.type=bazarr
-      - homepage.widget.url=http://bazarr:6767/bazarr
+      - homepage.widget.url=http://bazarr:6767
       - homepage.widget.key=${BAZARR_API_KEY}
     profiles:
       - media_download
@@ -226,14 +226,14 @@ services:
       retries: 10
     labels:
       - traefik.enable=true
-      - traefik.http.routers.jellyseerr.rule=(Host(`${JELLYSEERR_HOSTNAME}`))
+      - traefik.http.routers.jellyseerr.rule=(Host(`jellyseerr.${BASE_HOSTNAME}`))
       - traefik.http.routers.jellyseerr.tls=true
       - traefik.http.routers.jellyseerr.tls.certresolver=myresolver
       - traefik.http.services.jellyseerr.loadbalancer.server.port=5055
       - homepage.group=Media
       - homepage.name=JellySeerr
       - homepage.icon=jellyseerr.png
-      - homepage.href=https://${JELLYSEERR_HOSTNAME}
+      - homepage.href=https://jellyseerr.${BASE_HOSTNAME}
       - homepage.description=Content Recommendations and Request Management
       - homepage.weight=3
       - homepage.widget.type=jellyseerr
@@ -253,18 +253,18 @@ services:
       retries: 10
     labels:
       - traefik.enable=true
-      - traefik.http.routers.prowlarr.rule=(Host(`${HOSTNAME}`) && PathPrefix(`/prowlarr`))
+      - traefik.http.routers.prowlarr.rule=(Host(`prowlarr.${BASE_HOSTNAME}`))
       - traefik.http.routers.prowlarr.tls=true
       - traefik.http.routers.prowlarr.tls.certresolver=myresolver
       - traefik.http.services.prowlarr.loadbalancer.server.port=9696
       - homepage.group=Media Management
       - homepage.name=Prowlarr
       - homepage.icon=prowlarr.png
-      - homepage.href=/prowlarr
+      - homepage.href=https://prowlarr.${BASE_HOSTNAME}
       - homepage.description=Indexers management
       - homepage.weight=1
       - homepage.widget.type=prowlarr
-      - homepage.widget.url=http://prowlarr:9696/prowlarr
+      - homepage.widget.url=http://prowlarr:9696
       - homepage.widget.key=${PROWLARR_API_KEY}
     profiles:
       - media_download
@@ -492,7 +492,7 @@ services:
     profiles:
       - sabnzbd
   jellyfin:
-    image: lscr.io/linuxserver/jellyfin:latest
+    image: lscr.io/linuxserver/jellyfin:10.10.7
     container_name: jellyfin
     environment:
       - PUID=${USER_ID}
@@ -533,7 +533,7 @@ services:
       - homepage.widget.enableUser=true
       - homepage.widget.showEpisodeNumber=true
       - homepage.widget.expandOneStreamToTwoRows=false
-  ################################################################
+   ################################################################
   #                       Books                                  #
   ################################################################
   calibre-web:
@@ -565,10 +565,10 @@ services:
       - homepage.href=/calibre
       - homepage.description=Books management
       - homepage.weight=5
-      - homepage.widget.type=calibreweb
-      - homepage.widget.url=http://calibre-web:8083
-      - homepage.widget.username=${CALIBRE_USERNAME}
-      - homepage.widget.password=${CALIBRE_PASSWORD}
+      #- homepage.widget.type=calibreweb
+      #- homepage.widget.url=http://calibre-web:8083
+      #- homepage.widget.username=${CALIBRE_USERNAME}
+      #- homepage.widget.password=${CALIBRE_PASSWORD}
     profiles:
       - calibre-web
   calibre-web-automated:
@@ -733,9 +733,9 @@ services:
       - homepage.icon=watchtower.png
       - homepage.description=Observability
       - homepage.weight=4
-      - homepage.widget.type=watchtower
-      - homepage.widget.url=http://watchtower:8080/
-      - homepage.widget.key=${WATCHTOWER_API_KEY}
+        #      - homepage.widget.type=watchtower
+        #      - homepage.widget.url=http://watchtower:8080/
+        #      - homepage.widget.key=${WATCHTOWER_API_KEY}
   autoheal:
     image: willfarrell/autoheal:latest
     container_name: autoheal
@@ -786,10 +786,10 @@ services:
       - homepage.href=https://portainer.${DOMAIN}
       - homepage.description=Utilities
       - homepage.weight=4
-      - homepage.widget.type=portainer
-      - homepage.widget.url=http://portainer:9000
-      - homepage.widget.env=2
-      - homepage.widget.key=${HOMEPAGE_VAR_PORTAINER_API_KEY}
+        #      - homepage.widget.type=portainer
+        #      - homepage.widget.url=http://portainer:9000
+        #      - homepage.widget.env=2
+        #      - homepage.widget.key=${HOMEPAGE_VAR_PORTAINER_API_KEY}
     profiles:
       - portainer
   beszel:
@@ -810,11 +810,11 @@ services:
       - homepage.href=https://beszel.${DOMAIN}
       - homepage.description=Utilities
       - homepage.weight=4
-      - homepage.widget.type=beszel
-      - homepage.widget.url=http://beszel:8090
-      - homepage.widget.username=${BESZEL_USERNAME}
-      - homepage.widget.password=${BESZEL_PASSWORD}
-      - homepage.widget.version=2
+        #      - homepage.widget.type=beszel
+        #      - homepage.widget.url=http://beszel:8090
+        #      - homepage.widget.username=${BESZEL_USERNAME}
+        #      - homepage.widget.password=${BESZEL_PASSWORD}
+        #      - homepage.widget.version=2
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     profiles:
@@ -824,10 +824,12 @@ services:
     container_name: 'beszel-agent'
     restart: "no"
     volumes:
+      - /mnt/data/.beszel:/extra-filesystems/sdb1:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       # monitor other disks / partitions by mounting a folder in /extra-filesystems
       # - /mnt/disk/.beszel:/extra-filesystems/sda1:ro
     environment:
+      LOG_LEVEL: debug
       PORT: 45876
       # FILESYSTEM: /dev/sda1 # set to the correct filesystem for disk I/O stats
       KEY: ${BESZEL_KEY}
@@ -855,10 +857,10 @@ services:
       - homepage.href=https://prometheus.${DOMAIN}
       - homepage.description=Observability
       - homepage.weight=4
-      - homepage.widget.type=prometheus
-      - homepage.widget.url=http://prometheus:9090/
-      - homepage.widget.username=${PROMETHEUS_USERNAME}
-      - homepage.widget.password=${PROMETHEUS_PASSWORD}
+        #      - homepage.widget.type=prometheus
+        #      - homepage.widget.url=http://prometheus:9090/
+        #      - homepage.widget.username=${PROMETHEUS_USERNAME}
+        #      - homepage.widget.password=${PROMETHEUS_PASSWORD}
     profiles:
       - prometheus
   loki:
@@ -1130,7 +1132,7 @@ services:
       - "traefik.http.routers.jaeger.tls=true"  # Enable TLS for secure access
     profiles:
       - jaeger
-  monitoring:
+  glances:
     image: nicolargo/glances:dev
     container_name: glances
     restart: "no"
@@ -1138,16 +1140,22 @@ services:
     privileged: true
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - ${CONFIG_ROOT:-.}/glances/glances.conf:/glances/conf/glances.conf
+      - ${CONFIG_ROOT:-.}/glances:/glances/conf
     environment:
       - TZ=${TIMEZONE}
       - "GLANCES_OPT=-C /glances/conf/glances.conf -w"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.jaeger.rule=Host(`glances.${DOMAIN}`)"
+      - "traefik.http.routers.glances.rule=Host(`glances.${DOMAIN}`)"
       - "traefik.http.services.glances.loadbalancer.server.port=61208"
       - "traefik.http.routers.glances.entrypoints=web,web-secure"
       - "traefik.http.routers.glances.tls=true"
+      - homepage.group=Admin
+      - homepage.name=Glances
+      - homepage.icon=glances.png
+      - homepage.href=https://glances.${DOMAIN}
+      - homepage.description=Homepage
+      - homepage.weight=5
     profiles:
       - glances
   uptime-kuma:
@@ -1170,15 +1178,15 @@ services:
       - homepage.href=https://uptime-kuma.${DOMAIN}
       - homepage.description=Monitoring
       - homepage.weight=0
-      - homepage.widget.type=uptimekuma
-      - homepage.widget.url=http://uptime-kuma:3001
-      - homepage.widget.slug=app
+        #      - homepage.widget.type=uptimekuma
+        #      - homepage.widget.url=http://uptime-kuma:3001
+        #      - homepage.widget.slug=app
   vikunja:
     <<: *default-container
     image: vikunja/vikunja
     container_name: vikunja
     environment:
-      VIKUNJA_SERVICE_PUBLICURL: https://vikunja.nosoupforyou.xyz
+      VIKUNJA_SERVICE_PUBLICURL: https://vikunja.${DOMAIN}
       VIKUNJA_DATABASE_HOST: vikunja-db
       VIKUNJA_DATABASE_PASSWORD: changeme
       VIKUNJA_DATABASE_TYPE: mysql
@@ -1231,7 +1239,7 @@ services:
     container_name: silverbullet
     restart: "no"
     environment:
-      - SB_USER=admin:Clavelinas123
+      - SB_USER=admin:${SILVERBULLET_PASSWORD}
     volumes:
       - ${CONFIG_ROOT:-.}/silverbullet/space:/space
     labels:
@@ -1274,14 +1282,14 @@ services:
     restart: "no"
     profiles:
       - abs
-  web:
-    image: ghcr.io/hoarder-app/hoarder:${HOARDER_VERSION:-release}
-    container_name: hoarder
+  karakeep:
+    image: ghcr.io/karakeep-app/karakeep:${KARAKEEP_VERSION:-release}
+    container_name: karakeep
     restart: "no"
     volumes:
       - ${CONFIG_ROOT:-.}/hoarder/data:/data
     env_file:
-      - .hoarder.env
+      - .karakeep.env
     environment:
       MEILI_ADDR: http://meilisearch:7700
       BROWSER_WEB_URL: http://chrome:9222
@@ -1289,18 +1297,18 @@ services:
       DATA_DIR: /data
     labels:
       - traefik.enable=true
-      - traefik.http.routers.hoarder.rule=(Host(`hoarder.${DOMAIN}`))
-      - traefik.http.routers.hoarder.tls=true
-      - traefik.http.routers.hoarder.tls.certresolver=myresolver
-      - traefik.http.services.hoarder.loadbalancer.server.port=3000
+      - traefik.http.routers.karakeep.rule=(Host(`karakeep.${DOMAIN}`))
+      - traefik.http.routers.karakeep.tls=true
+      - traefik.http.routers.karakeep.tls.certresolver=myresolver
+      - traefik.http.services.karakeep.loadbalancer.server.port=3000
       - homepage.group=Main
-      - homepage.name=Hoarder
-      - homepage.icon=hoarder.png
-      - homepage.href=https://hoarder.${DOMAIN}
+      - homepage.name=Karakeep
+      - homepage.icon=karakeep.png
+      - homepage.href=https://karakeep.${DOMAIN}
       - homepage.description=Bookmarks management
       - homepage.weight=5
     profiles:
-      - hoarder
+      - karakeep
   chrome:
     image: gcr.io/zenika-hub/alpine-chrome:123
     restart: "no"
@@ -1312,7 +1320,7 @@ services:
       - --remote-debugging-port=9222
       - --hide-scrollbars
     profiles:
-      - hoarder
+      - karakeep
   meilisearch:
     image: getmeili/meilisearch:v1.11.1
     restart: "no"
@@ -1323,7 +1331,7 @@ services:
     volumes:
       - meilisearch:/meili_data
     profiles:
-      - hoarder
+      - karakeep
   tailscale-authkey1:
     image: tailscale/tailscale:latest
     container_name: ts-authkey-test
@@ -1344,9 +1352,9 @@ services:
       - homepage.name=Tailscale
       - homepage.icon=tailscale.png
       - homepage.weight=5
-      - homepage.widget.type=tailscale
-      - homepage.widget.deviceid=${TS_DEVICE_ID}
-      - homepage.widget.key=${TS_DEVICE_KEY_ID}
+        #      - homepage.widget.type=tailscale
+        #      - homepage.widget.deviceid=${TS_DEVICE_ID}
+        #      - homepage.widget.key=${TS_DEVICE_KEY_ID}
   nginx-authkey-test:
     image: nginx
     network_mode: service:tailscale-authkey1
@@ -1395,7 +1403,47 @@ services:
     restart: "no"
     profiles:
       - cloudfare-companion
-
+  glance:
+    container_name: glance
+    image: glanceapp/glance
+    restart: unless-stopped
+    volumes:
+      - ${CONFIG_ROOT}/glance/config:/app/config
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.glance.rule=(Host(`glance.${DOMAIN}`))
+      - traefik.http.routers.glance.tls=true
+      - traefik.http.routers.glance.tls.certresolver=myresolver
+      - traefik.http.services.glance.loadbalancer.server.port=8080
+      - homepage.group=Main
+      - homepage.name=Glance
+      - homepage.icon=glance.png
+      - homepage.href=https://glance.${DOMAIN}
+      - homepage.description=Homepage
+      - homepage.weight=5
+    profiles:
+      - glance
+  memory-loader:
+    container_name: memory-loader
+    image: alpine:latest
+    command: >
+      sh -c "apk add --no-cache stress-ng &&
+             stress-ng --vm 1 --vm-bytes 4G --vm-hang 0 --timeout 0 --metrics-brief"
+    deploy:
+      resources:
+        limits:
+          memory: 5G
+  cpu-loader:
+    container_name: cpu-loader
+    image: alpine:latest
+    command: >
+      sh -c "apk add --no-cache stress-ng &&
+             stress-ng --cpu 1 --timeout 0 --metrics-brief"
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
 volumes:
   prom_data:
   postgres-data:

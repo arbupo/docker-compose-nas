@@ -2,7 +2,7 @@
 
 This guide walks you through the process of setting up a Hetzner server with Docker, configuring a Hetzner Storage Box, and running media server applications like Jellyfin, Sonarr, Radarr, and Jellyseer.
 
-## Create Hetzner Server
+## Create Hetzner Server (only applicable to hetzner)
 1. Cloud-config for Initial Server Setup
 
 The following cloud-config is used to set up a Hetzner server with Docker, Docker Compose, and additional security packages (like Fail2Ban):
@@ -45,7 +45,7 @@ sudo apt install linux-modules-extra-$(uname -r)
 
 ## Create mount directores
 ```
-mkdir -p /mnt/data /mnt/data_nobrl
+sudo mkdir -p /mnt/data /mnt/data_nobrl
 ```
 
 ## Update ubuntu and install cifs utils
@@ -83,6 +83,37 @@ Visit: `https://www.hetzner.com/storage/storage-box/`
    ```bash
    sudo mount.cifs -o user=<<username>>,pass=<<password>> //u439025.your-storagebox.de/backup /mnt/data
    ```
+4. Backup Credentials File
+Create the credentials file `/etc/backup-credentials.txt` (mode 0600) with the following content:
+sudo vim /etc/backup-credentials.tx
+```bash
+username=<username>
+password=<password>
+```
+Then change the file's permissions to ensure security:
+```bash
+sudo chmod 0600 /etc/backup-credentials.txt
+```
+5.  Run command:
+   ```bash
+   sudo systemctl daemon-reload
+   ```
+
+   sudo mount -t nfs u439025.your-storagebox.de:/backup /mnt/data2
+   https://www.reddit.com/r/selfhosted/comments/1i13ses/how_many_of_you_are_successfully_running_jellyfin/
+
+   https://forum.proxmox.com/threads/tutorial-mounting-nfs-share-to-an-unprivileged-lxc.138506/
+
+ubuntu@instance-20251021-0745:/mnt$ fusermount -u /mnt/data2
+ubuntu@instance-20251021-0745:/mnt$ sshfs -o allow_other u439025@u439025.your-storagebox.de:/ /mnt/data2
+
+sshfs -o allow_other,umask=0000 u439025@u439025.your-storagebox.de:/ /mnt/data
+sudo nano /etc/fuse.conf
+`sshfs -o allow_other,default_permissions,uid=1000,gid=1000,umask=000 u439025@u439025.your-storagebox.de:/ /mnt/data`
+
+# try
+sshfs -o allow_other,umask=0000,cache=yes,reconnect,compression=no,ssh_command='ssh -p 23' u439025@u439025.your-storagebox.de:/ /mnt/data
+
  - Test trying to access using credentials
    ``` bash
    mount -t cifs <username>.your-storagebox.de/backup /mnt/backup-server cifs iocharset=utf8,rw,credentials=/etc/backup-credentials.txt,uid=<system account>,gid=<system group>,file_mode=0660,dir_mode=0770 0 0
@@ -97,30 +128,31 @@ Visit: `https://www.hetzner.com/storage/storage-box/`
    //<username>.your-storagebox.de/backup /mnt/backup-server cifs rw,credentials=/etc/backup-credentials.txt,uid=<system account>,gid=<system group>,file_mode=0660,dir_mode=0770 0 0
    ```
 
+2. Check user and id
+whoami
+id
+
 3. Additional Mount Configurations
 Add these two lines to /etc/fstab to enable multiple mount points:
 ``` bash
-//u439025.your-storagebox.de/backup /mnt/data cifs rw,credentials=/etc/backup-credentials.txt,file_mode=0770,dir_mode=0770,uid=1000,gid=1000 0 0
-//u439025.your-storagebox.de/backup /mnt/data_nobrl cifs nobrl,rw,credentials=/etc/backup-credentials.txt,file_mode=0770,dir_mode=0770,uid=1000,gid=1000,vers=3.0 0 0
+//u439025.your-storagebox.de/backup /mnt/data cifs rw,credentials=/etc/backup-credentials.txt,file_mode=0777,dir_mode=0777,uid=1000,gid=1000 0 0
+//u439025.your-storagebox.de/backup /mnt/data_nobrl cifs nobrl,rw,credentials=/etc/backup-credentials.txt,file_mode=0777,dir_mode=0777,uid=1000,gid=1000,vers=3.0 0 0
+
+sudo mount -t cifs //u439025.your-storagebox.de/backup /mnt/data -o rw,credentials=/etc/backup-credentials.txt,file_mode=0770,dir_mode=0770,uid=1001,gid=1001
 ```
+
+IMPORTANTE
+sudo mount -t cifs //u439025.your-storagebox.de/backup /mnt/data -o rw,credentials=/etc/backup-credentials.txt,file_mode=0777,dir_mode=0777,uid=1001,gid=1001,vers=3.0
+
+TODO: limit access to specific users
+For oci, user is 1001 and group is 1001, instead of 1000 for ubuntu
+
 The first line is for general file storage, and the second enables write access for databases.
 
-4. Backup Credentials File
-Create the credentials file `/etc/backup-credentials.txt` (mode 0600) with the following content:
-```bash
-username=<username>
-password=<password>
-```
-Then change the file's permissions to ensure security:
-```bash
-chmod 0600 /etc/backup-credentials.txt
-```
-5.  Run command:
-   ```bash
-   systemctl daemon-reload
-   ```
+try
+sudo mount -t cifs //u439025.your-storagebox.de/backup /mnt/data -o rw,credentials=/etc/backup-credentials.txt,file_mode=0770,dir_mode=0770,uid=1000,gid=1000,cache=none,noatime
 
-5. Create Media Folders
+5. Create Media Folders (only needed for empty storage)
 ```bash
 mkdir -p /mnt/data/medialibrary
 cd /mnt/data/medialibrary
@@ -141,15 +173,23 @@ mkdir -p ~/Documents/GitHub
 2. Clone Repository
 Clone the docker-compose-nas repository:
 ```bash
-mkdir GitHub
-cd GitHub
+cd ~/Documents/GitHub/
 git clone https://github.com/arbupo/docker-compose-nas.git
 ```
 3. Create Environment Variables File
 Copy the sample environment file and update it with the appropriate values:
 ```bash
-cp .env.sample .env
+cp .env.example .env
 ```
+
+3. Change cloudflare IP
+Change Cloudflare IP for traefik and homepage
+
+4. Get cloudflare api token
+You can create one api token that is used for both.
+| `CLOUDFLARE_DNS_API_TOKEN`     | API token with `DNS:Edit` permission                                                                                                                                                                   |                                                  |
+| `CLOUDFLARE_ZONE_API_TOKEN`    | API token with `Zone:Read` permission                                                                                                           
+
 4. Update env values
 ```bash
 HOSTNAME="app.nosoupforyou.xyz"
@@ -182,6 +222,12 @@ For the first time, run `./update-config.sh` to update the applications base URL
 
 ### Configure VPN
 Set env values for
+
+PROTONVPN_SERVER="United States"
+WIREGUARD_PRIVATE_KEY=
+
+
+
 ```bash
 VPN_SERVICE_PROVIDER=protonvpn
 VPN_TYPE=wireguard
@@ -224,6 +270,8 @@ Radarr and Sonarr may then be added via Settings > Apps. The Prowlarr server is 
 is `http://radarr:7878/radarr` Sonarr `http://sonarr:8989/sonarr`, and Lidarr `http://lidarr:8686/lidarr`.
 Their API keys can be found in Settings > Security > API Key.
 
+http://prowlarr:9696
+http://radarr:7878
 
 ### Configure Sonarr
 #### Configure authentication
@@ -687,3 +735,13 @@ docker compose up -d
 
 # Set user, group and permissions
 This is important, because if this is wrong, it will not work.
+
+
+# Configuration for watchtower 
+1. Generate a watchtower api key
+openssl rand -hex 32
+2. Update .env WATCHTOWER_API_KEY
+3. 
+
+
+# configuration for karakeep
